@@ -1,7 +1,7 @@
 buildscript {
     ext {
-        springBootVersion = '2.2.4.RELEASE'
-        javaCfEnvVersion = '2.1.1.RELEASE'
+        springBootVersion = '2.3.4.RELEASE'
+        javaCfEnvVersion = '2.2.2.RELEASE'
     }
 
     repositories {
@@ -15,15 +15,15 @@ buildscript {
     }
 }
 
-apply plugin: 'java'
+plugins {
+    id 'org.springframework.boot' version '2.3.4.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'java'
+}
 
-apply plugin: 'eclipse-wtp'
-apply plugin: 'idea'
-
-apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
-
-version = '1.0'
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
 
 repositories {
     mavenCentral()
@@ -41,22 +41,28 @@ dependencies {
     // Java CfEnv
     implementation "io.pivotal.cfenv:java-cfenv-boot:${javaCfEnvVersion}"
 
-    // JPA Persistence
-    runtimeOnly "org.apache.commons:commons-pool2:2.6.0"
-    runtimeOnly "com.h2database:h2"
-    runtimeOnly "mysql:mysql-connector-java"
-    runtimeOnly "org.postgresql:postgresql"
-    runtimeOnly "com.microsoft.sqlserver:mssql-jdbc"
+    // persistence
+    runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
+    runtimeOnly 'mysql:mysql-connector-java'
+    runtimeOnly 'org.postgresql:postgresql'
 
     // uncomment to use Lettuce instead of Jedis for Redis connections
     // runtime "io.lettuce:lettuce-core"
 
-    // Webjars
+    // Webjars -- consider upgrading versions
+//    implementation "org.webjars:bootstrap:4.5.2"
+//    implementation "org.webjars:angularjs:1.8.0"
+//    implementation "org.webjars:angular-ui:0.4.0-3"
+//    implementation "org.webjars:angular-ui-bootstrap:2.5.0"
+//    implementation "org.webjars:jquery:3.5.1"
+    // Webjars - original working versions
     implementation "org.webjars:bootstrap:3.1.1"
     implementation "org.webjars:angularjs:1.2.16"
     implementation "org.webjars:angular-ui:0.4.0-2"
     implementation "org.webjars:angular-ui-bootstrap:0.10.0-1"
     implementation "org.webjars:jquery:2.1.0-2"
+
 
     // Oracle - uncomment one of the following after placing driver in ./libs
     // compile files('libs/ojdbc8.jar')
@@ -64,10 +70,11 @@ dependencies {
 
     // Testing
     testImplementation "junit:junit"
-    testImplementation "org.springframework.boot:spring-boot-starter-test"
-}
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
 
-jar {
-    archiveBaseName = "spring-music"
-    archiveVersion = "" // omit the version from the war file name
+}
+test {
+    useJUnitPlatform()
 }
